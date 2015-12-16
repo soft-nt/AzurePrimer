@@ -32,6 +32,8 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="Modules\azure-primer\azure-primer.js" />
+    <Content Include="Modules\azure-primer\package.json" />
+    <Content Include="Modules\azure-primer\README" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="ResourceTemplates\WebApp\WebApp.json" />

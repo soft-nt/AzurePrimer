@@ -1,3 +1,5 @@
+// Include something if not logged
+
 var program = require('commander');
 var azure = require('azure-cli');
 var prompt = require('prompt');
