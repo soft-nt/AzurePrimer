@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "azure-cli": "^0.9.13",
+    "child-process-promise": "^1.1.0",
     "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
     "prompt": "^0.2.14"
