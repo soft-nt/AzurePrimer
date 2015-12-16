@@ -32,11 +32,10 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="Modules\azure-primer\azure-primer.js" />
-    <Compile Include="Modules\azure-primer\index.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="ResourceTemplates\WebApp\WebSite.json" />
-    <Content Include="ResourceTemplates\WebApp\WebSite.parameters.json" />
+    <Content Include="ResourceTemplates\WebApp\WebApp.json" />
+    <Content Include="ResourceTemplates\WebApp\WebApp.parameters.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Modules\" />
