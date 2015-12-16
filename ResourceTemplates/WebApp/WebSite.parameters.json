@@ -1,0 +1,21 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siteName": {
+      "value": "S3"
+    },
+    "siteLocation": {
+      "value": "West US"
+    },
+      "sku": {
+          "value": "Standard"
+      },
+      "repoURL": {
+          "value": "https://github.com/soft-nt/deployazurenode"
+      },
+      "workerSize": {
+          "value": "0"
+      }
+  }
+}

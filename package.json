@@ -1,0 +1,10 @@
+{
+  "name": "AzurePrimer",
+  "version": "0.0.0",
+  "description": "AzurePrimer",
+  "main": "app.js",
+  "author": {
+    "name": "ntorrent",
+    "email": ""
+  }
+}
