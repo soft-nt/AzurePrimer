@@ -14,6 +14,19 @@ function createAzureResource(templateUrl) {
     });
 };
 
+function isDeploymentFinished() {
+    var result = false;
+    
+    var cmd = 'azure group deployment show ' + resourceName;
+    exec(cmd, function (error, stdout, stderr) {
+        if (stdout.indexOf("ProvisioningState  : Succeeded") > 0) {
+            result = true;
+        }
+    });
+
+    return result;
+};
+
 function switchToArm() {
     // Switching to arm
     exec('azure config mode arm', function (error, stdout, stderr) {
@@ -57,7 +70,12 @@ var createWebSite = function (name) {
     jsonfile.writeFile(file, obj, function (err) { });
     
     // Creating a resource based on web site template
-    createAzureResource('https://raw.githubusercontent.com/soft-nt/AzurePrimer/master/ResourceTemplates/WebSite/WebSite.json');
+    createAzureResource('https://raw.githubusercontent.com/soft-nt/AzurePrimer/master/ResourceTemplates/WebApp/WebApp.json');
+
+    // Check for the deployment status
+    console.log(isDeploymentFinished());
+    console.log(isDeploymentFinished());
+    console.log(isDeploymentFinished());
 };
 
 // Exported functions
@@ -72,24 +90,6 @@ program
   .description('Create a web app on using Azure Primer')
   .action(function (name) {
     createWebSite(name);
-    
-    //function sleep_until(seconds) {
-    //    var max_sec = new Date().getTime();
-    //    while (new Date() < max_sec + seconds * 1000) { }
-    //    return true;
-    //}
-    
-    //// Checking if it was a success
-    //var pos = -1;
-    //while (pos <= 0) {
-    //    sleep_until(5);
-    //    console.log('Waiting the job to complete every 5s');
-        
-    //    var cmd2 = 'azure group deployment show LPSPrimerTest';
-    //    exec(cmd2, function (error, stdout, stderr) {
-    //        pos = stdout.indexOf("ProvisioningState  : Succeeded");
-    //    });
-    //}
 });
 
 program.parse(process.argv);
