@@ -80,6 +80,10 @@ var createWebSite = function (name) {
             console.log('Result: ' + result.stdout);
 
             waitingDeploymentToFinish();
+        }).fail(function(err) {
+            if (err.indexOf("result is not defined") < 0) {
+                console.error('ERROR: ', err);    
+            }
         });
     });
 };
