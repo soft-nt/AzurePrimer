@@ -104,7 +104,7 @@
               "name": "web",
               "type": "sourcecontrols",
               "dependsOn": [
-                "Staging"
+                "[concat('Staging',parameters('siteName'))]"
               ],
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
@@ -129,7 +129,7 @@
               "name": "web",
               "type": "sourcecontrols",
               "dependsOn": [
-                "Dev"
+                "[concat('Dev',parameters('siteName'))]"
               ],
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
