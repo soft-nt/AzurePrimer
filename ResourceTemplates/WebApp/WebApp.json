@@ -91,7 +91,7 @@
         },
         {
           "apiVersion": "2014-04-01",
-          "name": "Staging",
+          "name": "[concat('Staging',parameters('siteName'))]",
           "type": "slots",
           "location": "[resourceGroup().location]",
           "dependsOn": [
@@ -116,7 +116,7 @@
         },
         {
           "apiVersion": "2014-04-01",
-          "name": "Dev",
+          "name": "[concat('Dev',parameters('siteName'))]",
           "type": "slots",
           "location": "[resourceGroup().location]",
           "dependsOn": [
