@@ -91,7 +91,7 @@
         },
         {
           "apiVersion": "2014-04-01",
-          "name": "[concat('Staging',parameters('siteName'))]",
+          "name": "[concat(variables('internalSiteName'),'-Staging')]",
           "type": "slots",
           "location": "[resourceGroup().location]",
           "dependsOn": [
@@ -104,7 +104,7 @@
               "name": "web",
               "type": "sourcecontrols",
               "dependsOn": [
-                "[concat('Staging',parameters('siteName'))]"
+                "[concat(variables('internalSiteName'),'-Staging')]"
               ],
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
@@ -116,7 +116,7 @@
         },
         {
           "apiVersion": "2014-04-01",
-          "name": "[concat('Dev',parameters('siteName'))]",
+          "name": "[concat(variables('internalSiteName'),'-Staging')]",
           "type": "slots",
           "location": "[resourceGroup().location]",
           "dependsOn": [
@@ -129,7 +129,7 @@
               "name": "web",
               "type": "sourcecontrols",
               "dependsOn": [
-                "[concat('Dev',parameters('siteName'))]"
+                "[concat(variables('internalSiteName'),'-Dev')]"
               ],
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
