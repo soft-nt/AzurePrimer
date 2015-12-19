@@ -1,11 +1,8 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "AzurePrimer", "AzurePrimer.njsproj", "{D887A381-2CF2-424D-918A-B4354CDC4B3F}"
-EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "AzurePrimerWeb", "AzurePrimerWeb\AzurePrimerWeb.njsproj", "{F6BB7608-DE32-4CD2-A78E-BE4E22687B44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +14,6 @@ Global
 		{D887A381-2CF2-424D-918A-B4354CDC4B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D887A381-2CF2-424D-918A-B4354CDC4B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D887A381-2CF2-424D-918A-B4354CDC4B3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6BB7608-DE32-4CD2-A78E-BE4E22687B44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6BB7608-DE32-4CD2-A78E-BE4E22687B44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6BB7608-DE32-4CD2-A78E-BE4E22687B44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6BB7608-DE32-4CD2-A78E-BE4E22687B44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
