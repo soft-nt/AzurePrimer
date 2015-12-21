@@ -4,9 +4,11 @@ var program = require('commander');
 var azure = require('azure-cli');
 var exec = require('child-process-promise').exec;
 var jsonfile = require('jsonfile');
+var git = require("nodegit");
 
 var resourceName = "LPSPrimerTest";
 var location = "West US";
+
 
 function createAzureResource(templateUrl) {
     var cmd = 'azure group create "' + resourceName + '" "' + location + '" -d Test -e params.json --template-uri ' + templateUrl;
@@ -37,8 +39,13 @@ function switchToArm() {
 };
 
 var test = function () {
-    console.log('test ok');
+    console.log('Getting the data');
+    git.Clone('https://github.com/soft-nt/deployazurenode', 'tmp').then(function (repo) { 
+          
+    });
 };
+
+
 
 var login = function (userName, password) {
     var cmd = 'azure login -u ' + userName + ' -p ' + password;
@@ -106,6 +113,8 @@ exports.createWebSite = createWebSite;
 exports.login = login;
 exports.selectSubscription = selectSubscription;
 
+
+
 // Creacting the commands
 program
   .version('0.0.1')
@@ -138,6 +147,14 @@ program
     }).fail(function (err) {
         console.log(err);
     });
+});
+
+program
+  .version('0.0.1')
+  .command('test')
+  .description('Test')
+  .action(function () {
+    test();
 });
 
 program.parse(process.argv);

@@ -11,10 +11,11 @@
     "url": "git+https://github.com/soft-nt/AzurePrimer.git"
   },
   "dependencies": {
-    "commander": "^2.9.0",
     "azure-cli": "^0.9.13",
     "child-process-promise": "^1.1.0",
+    "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
+    "nodegit": "^0.6.3",
     "q": "^1.4.1"
   },
   "keywords": [
