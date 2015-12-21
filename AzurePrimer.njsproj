@@ -31,17 +31,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
-    <Compile Include="Modules\azure-primer\azure-primer.js" />
-    <Content Include="Modules\azure-primer\package.json" />
-    <Content Include="Modules\azure-primer\README" />
+    <Compile Include="azure-primer.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="ResourceTemplates\WebApp\WebApp.json" />
     <Content Include="ResourceTemplates\WebApp\WebApp.parameters.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Modules\" />
-    <Folder Include="Modules\azure-primer\" />
     <Folder Include="ResourceTemplates\" />
     <Folder Include="ResourceTemplates\WebApp\" />
   </ItemGroup>

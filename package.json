@@ -1,17 +1,30 @@
 {
-  "name": "AzurePrimer",
-  "version": "0.0.0",
-  "description": "AzurePrimer",
-  "main": "app.js",
-  "author": {
-    "name": "ntorrent",
-    "email": ""
+  "name": "azure-primer",
+  "version": "1.0.3",
+  "description": "Primer commands to use for site creation",
+  "main": "azure-primer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soft-nt/AzurePrimer.git"
   },
   "dependencies": {
+    "commander": "^2.9.0",
     "azure-cli": "^0.9.13",
     "child-process-promise": "^1.1.0",
-    "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
-    "prompt": "^0.2.14"
-  }
+    "q": "^1.4.1"
+  },
+  "keywords": [
+    "azure",
+    "primer"
+  ],
+  "author": "soft-nt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/soft-nt/AzurePrimer/issues"
+  },
+  "homepage": "https://github.com/soft-nt/AzurePrimer#readme"
 }
