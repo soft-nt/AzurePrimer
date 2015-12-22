@@ -45,14 +45,12 @@ function createGithubRepo(userName, password, repoName) {
     var client = github.client({
         username: userName,
         password: password
-    });
+    }, null);
 
     client.repo({
         "name" : repoName,
         "description": "This is your first repo",
-    }, function(err, status, body, headers) {
-        console.log(err);
-    }); //repo
+    });
 }
 
 function cloneRepo(repoUrl, name, githubUserName, githubPassword)
@@ -165,9 +163,9 @@ exports.selectSubscription = selectSubscription;
 // Creacting the commands
 program
   .version('0.0.1')
-  .command('createWebApp <name> <repoUrl>')
+  .command('createWebSite <name> <repoUrl>')
   .alias('cwa')
-  .description('Create a web app using Azure Primer')
+  .description('Create a web site using Azure Primer')
   .action(function (name, repoUrl) {
     createWebSite(name, repoUrl);
 });
