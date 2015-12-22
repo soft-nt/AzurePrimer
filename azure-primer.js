@@ -48,9 +48,9 @@ function createGithubRepo(userName, password, repoName) {
     });
 
     client.repo({
-        "name": "Hello-World",
+        "name" : repoName,
         "description": "This is your first repo",
-    }, function(err) {
+    }, function(err, status, body, headers) {
         console.log(err);
     }); //repo
 }
@@ -77,7 +77,8 @@ function cloneRepo(repoUrl, name, githubUserName, githubPassword)
                         console.log('Removing the .git folder');
                         fse.remove(tFolder + '/.git').then(function() {
                             console.log('.git folder removed');
-                            createGithubRepo(githubUserName, githubPassword);
+                            var repoName = 'AzurePrimer-' + name;
+                            createGithubRepo(githubUserName, githubPassword, name);
                         });
                     });
 
@@ -87,7 +88,8 @@ function cloneRepo(repoUrl, name, githubUserName, githubPassword)
 }
 
 var test = function (githubUserName, githubPassword) {
-    cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp', githubUserName, githubPassword);
+    createGithubRepo(githubUserName, githubPassword, "tmp");
+    //cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp', githubUserName, githubPassword);
 };
 
 
