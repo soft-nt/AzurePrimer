@@ -1,6 +1,6 @@
 {
   "name": "azure-primer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Primer commands to use for site creation",
   "main": "azure-primer.js",
   "scripts": {
