@@ -41,20 +41,21 @@ function switchToArm() {
     return exec('azure config mode arm');
 };
 
-function createGithubRepo(userName, password) {
+function createGithubRepo(userName, password, repoName) {
     var client = github.client({
         username: userName,
         password: password
     });
 
-    var ghme = client.me();
-    ghme.repo({
+    client.repo({
         "name": "Hello-World",
         "description": "This is your first repo",
-    }, null); //repo
+    }, function(err) {
+        console.log(err);
+    }); //repo
 }
 
-function cloneRepo(repoUrl, name)
+function cloneRepo(repoUrl, name, githubUserName, githubPassword)
 {
     var sFolder = name;
     var tFolder = name + 'New';
@@ -75,7 +76,8 @@ function cloneRepo(repoUrl, name)
                     fse.copy(sFolder, tFolder).then(function() {
                         console.log('Removing the .git folder');
                         fse.remove(tFolder + '/.git').then(function() {
-                            console.log();
+                            console.log('.git folder removed');
+                            createGithubRepo(githubUserName, githubPassword);
                         });
                     });
 
@@ -84,8 +86,8 @@ function cloneRepo(repoUrl, name)
         });
 }
 
-var test = function () {
-    cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp');
+var test = function (githubUserName, githubPassword) {
+    cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp', githubUserName, githubPassword);
 };
 
 
@@ -196,8 +198,8 @@ program
   .version('0.0.1')
   .command('test')
   .description('Test')
-  .action(function () {
-    test();
+  .action(function (githubUserName, githubPassword) {
+    test(githubUserName, githubPassword);
 });
 
 program.parse(process.argv);
