@@ -6,6 +6,7 @@ var exec = require('child-process-promise').exec;
 var jsonfile = require('jsonfile');
 var git = require("nodegit");
 var fse = require('fs-extra');
+var github = require('octonode');
 
 var resourceName = "LPSPrimerTest";
 var location = "West US";
@@ -39,6 +40,19 @@ function switchToArm() {
     console.log('-- Switching to arm mode --')
     return exec('azure config mode arm');
 };
+
+function createGithubRepo(userName, password) {
+    var client = github.client({
+        username: userName,
+        password: password
+    });
+
+    var ghme = client.me();
+    ghme.repo({
+        "name": "Hello-World",
+        "description": "This is your first repo",
+    }, null); //repo
+}
 
 function cloneRepo(repoUrl, name)
 {
