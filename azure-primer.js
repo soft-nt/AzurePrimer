@@ -5,6 +5,7 @@ var azure = require('azure-cli');
 var exec = require('child-process-promise').exec;
 var jsonfile = require('jsonfile');
 var git = require("nodegit");
+var fse = require('fs-extra');
 
 var resourceName = "LPSPrimerTest";
 var location = "West US";
@@ -33,16 +34,44 @@ function waitingDeploymentToFinish() {
     return result;
 };
 
+
 function switchToArm() {
     console.log('-- Switching to arm mode --')
     return exec('azure config mode arm');
 };
 
+function cloneRepo(repoUrl, name)
+{
+    var sFolder = name;
+    var tFolder = name + 'New';
+
+    // Cleaning existing folders
+    console.log('Cleaning the temp folders');
+    fse.remove(sFolder)
+        .then(function() {
+            console.log('Folder %s deleted', sFolder);
+            fse.remove(tFolder).then(function() {
+                console.log('Folder %s deleted', tFolder);
+
+                console.log('Cloning Git repo ' + repoUrl + ' on the folder ' + sFolder);
+                git.Clone(repoUrl, sFolder).then(function(repo) {
+                    console.log('Copying the file in the target folder %s', tFolder);
+                    
+                    // Create the new repo
+                    fse.copy(sFolder, tFolder).then(function() {
+                        console.log('Removing the .git folder');
+                        fse.remove(tFolder + '/.git').then(function() {
+                            console.log();
+                        });
+                    });
+
+                });
+            });
+        });
+}
+
 var test = function () {
-    console.log('Getting the data');
-    git.Clone('https://github.com/soft-nt/deployazurenode', 'tmp').then(function (repo) { 
-          
-    });
+    cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp');
 };
 
 
