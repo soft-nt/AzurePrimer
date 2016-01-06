@@ -86,7 +86,7 @@
           "properties": {
             "RepoUrl": "[parameters('repoURL')]",
             "branch": "master",
-            "IsManualIntegration": false
+            "IsManualIntegration": true
           }
         },
         {
@@ -109,7 +109,7 @@
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
                 "branch": "master",
-                "IsManualIntegration": true
+                "IsManualIntegration": false
               }
             }
           ]
@@ -134,7 +134,7 @@
               "properties": {
                 "RepoUrl": "[parameters('repoURL')]",
                 "branch": "develop",
-                "IsManualIntegration": true
+                "IsManualIntegration": false
               }
             }
           ]
