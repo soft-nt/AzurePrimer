@@ -86,7 +86,7 @@
           "properties": {
             "RepoUrl": "[parameters('repoURL')]",
             "branch": "master",
-            "IsManualIntegration": true
+            "IsManualIntegration": false
           }
         },
         {
