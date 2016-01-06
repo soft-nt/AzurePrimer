@@ -1,6 +1,6 @@
 {
   "name": "azure-primer",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Primer commands to use for site creation",
   "main": "azure-primer.js",
   "scripts": {
@@ -17,7 +17,8 @@
     "jsonfile": "^2.2.3",
     "nodegit": "^0.6.3",
     "q": "^1.4.1",
-    "octonode": "^0.7.4"
+    "octonode": "^0.7.4",
+    "colors": "^0.6.2"
   },
   "keywords": [
     "azure",
