@@ -29,6 +29,7 @@ function waitingDeploymentToFinish(resourceName) {
             
             if (result.stdout.indexOf("ProvisioningState  : Succeeded") > 0) {
                 clearInterval(schedule);
+                console.log('Deployment is completed in n seconds'.green);
             }
         });
     }, 5000);
@@ -147,28 +148,32 @@ var createApp = function (name, repoUrl) {
             console.log('Resource creation started');
             console.log('Result: ' + result.stdout);
 
+            console.log();
             console.log('---- CREATION SUMMARY ----'.green);
             console.log('Resource group: %s'.green, resourceGroupName);
-            console.log('Git repo: %s'.green, repoURL);
-            console.log('App Url: http://lpsdeploytest%s.azurewebsites.net'.green, name);
-                        
+            console.log('Git repo: %s'.green, repoUrl);
+            console.log();
+            console.log('App Urls: http://primer-%s.azurewebsites.net'.green, name.toLowerCase());
+            console.log();
+
             waitingDeploymentToFinish(resourceGroupName);
 
         }).fail(function (err) {
-            // Code needs to be improved like if the login is valid
-            if (err.indexOf("result is not defined") < 0) {
-                console.error('ERROR: ', err);
-            }
+            console.error(err.stderr.red);
         });
     });
 };
 
-var createAppDemo = function(name, projectType){
+var createAppFromTemplate = function(name, projectType){
     switch (projectType) {
         case 'ExpressJs':
             createApp(name, 'https://github.com/soft-nt/ExpressJsTemplate');
             break;
         case 'ASP-MVC':
+            console.log('ASP-MVC project type is not implemented yet');
+            break;
+        case 'PHP':
+            console.log('PHP project type is not implemented yet');
             break;
         default:
             console.log('Project type %s is not known'.red, projectType);
@@ -179,7 +184,7 @@ var createAppDemo = function(name, projectType){
 // Exported functions
 exports.test = test;
 exports.createApp = createApp;
-exports.createAppDemo = createAppDemo;
+exports.createAppFromTemplate = createAppFromTemplate;
 exports.login = login;
 exports.selectSubscription = selectSubscription;
 
@@ -197,11 +202,11 @@ program
 
 program
   .version('0.0.1')
-  .command('createAppDemo <name> <projectType>')
-  .alias('cad')
-  .description('Create an app using Azure Primer - for the demo')
+  .command('createAppFromTemplate <name> <projectType>')
+  .alias('caft')
+  .description('Create an app using Azure Primer template')
   .action(function (name, projectType) {
-    createAppDemo(name, projectType);
+    createAppFromTemplate(name, projectType);
 });
 
 program
