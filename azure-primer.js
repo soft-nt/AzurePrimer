@@ -167,7 +167,7 @@ var createApp = function (name, repoUrl) {
 var createAppFromTemplate = function(name, projectType){
     switch (projectType) {
         case 'ExpressJs':
-            createApp(name, 'https://github.com/soft-nt/ExpressJsTemplate');
+            createApp(name, 'https://github.com/soft-nt/AzurePrimer-ExpressJSTemplate');
             break;
         case 'ASP-MVC':
             console.log('ASP-MVC project type is not implemented yet');
