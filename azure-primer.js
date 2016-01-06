@@ -7,18 +7,19 @@ var jsonfile = require('jsonfile');
 var git = require("nodegit");
 var fse = require('fs-extra');
 var github = require('octonode');
+var colors = require('colors');
 
-var resourceName = "LPSPrimerTest";
 var location = "West US";
+var cResourceGroupName = 'LPSDelivery-APrimerTest-';
 
 
-function createAzureResource(templateUrl) {
+function createAzureResource(templateUrl, resourceName) {
     var cmd = 'azure group create "' + resourceName + '" "' + location + '" -d Test -e params.json --template-uri ' + templateUrl;
     console.log('-- Creating the resource --');
     return exec(cmd);
 };
 
-function waitingDeploymentToFinish() {
+function waitingDeploymentToFinish(resourceName) {
     console.log('Waiting deployment to finish');
     var schedule = setInterval(function () {
         var cmd = 'azure group deployment show ' + resourceName;
@@ -129,21 +130,32 @@ function createParams(name, repoUrl) {
     }
     
     jsonfile.writeFile(file, obj, function (err) { });
+
+    console.log('Params have been created'.green);
 }
 
-var createWebSite = function (name, repoUrl) {
-    console.log('--- Creating a web site called ' + name + ' ---');
+var createApp = function (name, repoUrl) {
+    var resourceGroupName = cResourceGroupName + name;
+
+    console.log('--- Creating an app called ' + name + ' ---');
     
     switchToArm().then(function () {
         createParams(name, repoUrl);
         
         // Creating a resource based on web site template
-        createAzureResource('https://raw.githubusercontent.com/soft-nt/AzurePrimer/master/ResourceTemplates/WebApp/WebApp.json').then(function (result) {
+        createAzureResource('https://raw.githubusercontent.com/soft-nt/AzurePrimer/master/ResourceTemplates/WebApp/WebApp.json', resourceGroupName).then(function (result) {
             console.log('Resource creation started');
             console.log('Result: ' + result.stdout);
-            
-            waitingDeploymentToFinish();
+
+            console.log('---- CREATION SUMMARY ----'.green);
+            console.log('Resource group: %s'.green, resourceGroupName);
+            console.log('Git repo: %s'.green, repoURL);
+            console.log('App Url: http://lpsdeploytest%s.azurewebsites.net'.green, name);
+                        
+            waitingDeploymentToFinish(resourceGroupName);
+
         }).fail(function (err) {
+            // Code needs to be improved like if the login is valid
             if (err.indexOf("result is not defined") < 0) {
                 console.error('ERROR: ', err);
             }
@@ -151,10 +163,23 @@ var createWebSite = function (name, repoUrl) {
     });
 };
 
+var createAppDemo = function(name, projectType){
+    switch (projectType) {
+        case 'ExpressJs':
+            createApp(name, 'https://github.com/soft-nt/ExpressJsTemplate');
+            break;
+        case 'ASP-MVC':
+            break;
+        default:
+            console.log('Project type %s is not known'.red, projectType);
+    }
+}
+
 
 // Exported functions
 exports.test = test;
-exports.createWebSite = createWebSite;
+exports.createApp = createApp;
+exports.createAppDemo = createAppDemo;
 exports.login = login;
 exports.selectSubscription = selectSubscription;
 
@@ -163,11 +188,20 @@ exports.selectSubscription = selectSubscription;
 // Creacting the commands
 program
   .version('0.0.1')
-  .command('createWebSite <name> <repoUrl>')
-  .alias('cwa')
-  .description('Create a web site using Azure Primer')
+  .command('createApp <name> <repoUrl>')
+  .alias('ca')
+  .description('Create an app using Azure Primer')
   .action(function (name, repoUrl) {
-    createWebSite(name, repoUrl);
+    createApp(name, repoUrl);
+});
+
+program
+  .version('0.0.1')
+  .command('createAppDemo <name> <projectType>')
+  .alias('cad')
+  .description('Create an app using Azure Primer - for the demo')
+  .action(function (name, projectType) {
+    createAppDemo(name, projectType);
 });
 
 program
