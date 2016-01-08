@@ -3,6 +3,7 @@
 var program = require('commander');
 var azure = require('azure-cli');
 var exec = require('child-process-promise').exec;
+var sexec = require('child_process').exec;
 var jsonfile = require('jsonfile');
 var git = require("nodegit");
 var fse = require('fs-extra');
@@ -22,19 +23,27 @@ function createAzureResource(templateUrl, resourceName) {
 function waitingDeploymentToFinish(resourceName) {
     console.log('Waiting deployment to finish');
     var schedule = setInterval(function () {
-        var cmd = 'azure group deployment show ' + resourceName;
+        console.info('Checking...');
+
+        var cmd = 'azure group log show ' + resourceName + ' --json';
         
-        exec(cmd).then(function (result) {
-            console.log('...');
-            
-            if (result.stdout.indexOf("ProvisioningState  : Succeeded") > 0) {
-                clearInterval(schedule);
-                console.log('Deployment is completed in n seconds'.green);
+        sexec(cmd, function(error, stdout, stderr) {
+            if (error) {
+                console.error(error.red)
+            }
+            else
+            {
+                if (stdout != undefined && stdout != '') {
+                    var result = JSON.parse(stdout);
+                    var deploySucceeded = result[0].status.value == 'Succeeded' ? true : false;
+                    if (deploySucceeded) {
+                        clearInterval(schedule);
+                        console.info('Deployment is completed in n seconds'.green);
+                    };
+                };
             }
         });
     }, 5000);
-    
-    return result;
 };
 
 
@@ -61,7 +70,7 @@ function cloneRepo(repoUrl, name, githubUserName, githubPassword)
     var tFolder = name + 'New';
 
     // Cleaning existing folders
-    console.log('Cleaning the temp folders');
+    console.info('Cleaning the temp folders');
     fse.remove(sFolder)
         .then(function() {
             console.log('Folder %s deleted', sFolder);
@@ -87,9 +96,8 @@ function cloneRepo(repoUrl, name, githubUserName, githubPassword)
         });
 }
 
-var test = function (githubUserName, githubPassword) {
-    createGithubRepo(githubUserName, githubPassword, "tmp");
-    //cloneRepo('https://github.com/soft-nt/deployazurenode', 'tmp', githubUserName, githubPassword);
+var test = function (resourceName) {
+    waitingDeploymentToFinish(resourceName);
 };
 
 
@@ -237,8 +245,8 @@ program
   .version('0.0.1')
   .command('test')
   .description('Test')
-  .action(function (githubUserName, githubPassword) {
-    test(githubUserName, githubPassword);
+  .action(function (resourceName) {
+    test(resourceName);
 });
 
 program.parse(process.argv);
