@@ -5,7 +5,6 @@ var azure = require('azure-cli');
 var exec = require('child-process-promise').exec;
 var sexec = require('child_process').exec;
 var jsonfile = require('jsonfile');
-var git = require("nodegit");
 var fse = require('fs-extra');
 var github = require('octonode');
 var colors = require('colors');

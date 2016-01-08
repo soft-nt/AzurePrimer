@@ -15,7 +15,6 @@
     "child-process-promise": "^1.1.0",
     "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
-    "nodegit": "^0.6.3",
     "q": "^1.4.1",
     "octonode": "^0.7.4",
     "colors": "^0.6.2",
