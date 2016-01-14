@@ -8,6 +8,7 @@ var jsonfile = require('jsonfile');
 var fse = require('fs-extra');
 var github = require('octonode');
 var colors = require('colors');
+var http = require('http');
 
 var location = "West US";
 var cResourceGroupName = 'LPSDelivery-APrimerTest-';
@@ -19,29 +20,60 @@ function createAzureResource(templateUrl, resourceName) {
     return exec(cmd);
 };
 
-function waitingDeploymentToFinish(resourceName) {
-    console.log('Waiting deployment to finish');
-    var schedule = setInterval(function () {
-        console.info('Checking...');
+function waitingDeploymentToFinish(resourceName, appName) {
+    var step = 'waitingServices';
 
-        var cmd = 'azure group log show ' + resourceName + ' --json';
+    // Waiting the resources to be created
+    var schedule = setInterval(function () {
+        switch (step) {
+            case 'waitingServices':
+                console.info('Waiting the services to be created...');
+
+                var cmd = 'azure group log show ' + resourceName + ' --json';
+                
+                sexec(cmd, function(error, stdout, stderr) {
+                    if (error) {
+                        console.error(error.red)
+                    }
+                    else
+                    {
+                        if (stdout != undefined && stdout != '') {
+                            var result = JSON.parse(stdout);
+                            var deploySucceeded = result[0].status.value == 'Succeeded' ? true : false;
+                            if (deploySucceeded) {
+                                step = 'waitingSite';
+                                console.info('Moving to wait site creation');
+                            };
+                        };
+                    }
+                });
+                break;
+            case 'waitingSite':
+                var url = 'http://primer-'+appName+'.azurewebsites.net';
         
-        sexec(cmd, function(error, stdout, stderr) {
-            if (error) {
-                console.error(error.red)
-            }
-            else
-            {
-                if (stdout != undefined && stdout != '') {
-                    var result = JSON.parse(stdout);
-                    var deploySucceeded = result[0].status.value == 'Succeeded' ? true : false;
-                    if (deploySucceeded) {
-                        clearInterval(schedule);
-                        console.info('Deployment is completed in n seconds'.green);
-                    };
-                };
-            }
-        });
+                console.info('Waiting the site %s to be provisonned...', url);
+
+                http.get(url, function(response) {
+                    var body = '';
+
+                    response.on('data', function(data) {
+                        body += data;
+                    });
+
+                    response.on('end', function() {
+                        if (body.indexOf('Express Primer') > 0) {
+                            step = 'completed';
+                            console.log('Moving to the completed step');
+                        };
+                    });
+                }).on('error', function(e) {
+                    console.log('error ' + e);
+                });
+                break;
+            case 'completed':
+                clearInterval(schedule);
+                break;
+        }
     }, 5000);
 };
 
@@ -96,7 +128,6 @@ function cloneRepo(repoUrl, name, githubUserName, githubPassword)
 }
 
 var test = function (resourceName) {
-    waitingDeploymentToFinish(resourceName);
 };
 
 
@@ -163,7 +194,7 @@ var createApp = function (name, repoUrl) {
             console.log('App Urls: http://primer-%s.azurewebsites.net'.green, name.toLowerCase());
             console.log();
 
-            waitingDeploymentToFinish(resourceGroupName);
+            waitingDeploymentToFinish(resourceGroupName, name);
 
         }).fail(function (err) {
             console.error(err.stderr.red);
