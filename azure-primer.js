@@ -20,6 +20,24 @@ function createAzureResource(templateUrl, resourceName) {
     return exec(cmd);
 };
 
+function checkUrlProvisioning(url, onProvisioningDone) {
+    http.get(url, function(response) {
+        var body = '';
+
+        response.on('data', function(data) {
+            body += data;
+        });
+
+        response.on('end', function() {
+            if (body.indexOf('Express Primer') > 0) {
+                onProvisioningDone();
+            };
+        });
+    }).on('error', function(e) {
+        console.log('error ' + e);
+    });
+}
+
 function waitingDeploymentToFinish(resourceName, appName) {
     var step = 'waitingServices';
 
@@ -49,26 +67,40 @@ function waitingDeploymentToFinish(resourceName, appName) {
                 });
                 break;
             case 'waitingSite':
-                var url = 'http://primer-'+appName+'.azurewebsites.net';
+                var url = 'http://primer-'+appName + '.azurewebsites.net/';
+                var stagingUrl = 'http://primer-'+appName+'-primer-'+appName+'-staging.azurewebsites.net/';
+                var devUrl = 'http://primer-'+appName+'-primer-'+appName+'-dev.azurewebsites.net/';
         
-                console.info('Waiting the site %s to be provisonned...', url);
+                var state = 0;
 
-                http.get(url, function(response) {
-                    var body = '';
+                console.info('Waiting sites to be provisionned');
 
-                    response.on('data', function(data) {
-                        body += data;
+                if ((state & 1) == 0) {
+                    checkUrlProvisioning(url, function() {
+                        state = state | 1;
+                        console.log('Live available: %s'.green, url);
                     });
+                };
 
-                    response.on('end', function() {
-                        if (body.indexOf('Express Primer') > 0) {
-                            step = 'completed';
-                            console.log('Moving to the completed step');
-                        };
+                if ((state & 2) == 0) {
+                    checkUrlProvisioning(stagingUrl, function() {
+                        state = state | 2;
+                        console.log('Live available: %s'.green, stagingUrl);
                     });
-                }).on('error', function(e) {
-                    console.log('error ' + e);
-                });
+                };
+            
+                if ((state & 4) == 0) {
+                    checkUrlProvisioning(devUrl, function() {
+                        state = state | 4;
+                        console.log('Live available: %s'.green, devUrl);
+                    });
+                };
+
+                if (state == 7) {
+                    step = 'completed';
+                    console.log('Moving to the completed step');
+                };
+
                 break;
             case 'completed':
                 clearInterval(schedule);
