@@ -1,2 +1,2 @@
-﻿var primer = require('./Modules/azure-primer/azure-primer.js');
-primer.createWebSite('T1');
+﻿var primer = require('./azure-primer.js');
+primer.createAppFromTemplate('T', 'ExpressJs');

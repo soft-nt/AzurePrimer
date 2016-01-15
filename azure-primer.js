@@ -21,6 +21,8 @@ function createAzureResource(templateUrl, resourceName) {
 };
 
 function checkUrlProvisioning(url, onProvisioningDone) {
+    console.log(url);
+
     http.get(url, function(response) {
         var body = '';
 
@@ -45,7 +47,7 @@ function waitingDeploymentToFinish(resourceName, appName) {
     var schedule = setInterval(function () {
         switch (step) {
             case 'waitingServices':
-                console.info('Waiting the services to be created...');
+                console.info('Waiting services provisioning ...');
 
                 var cmd = 'azure group log show ' + resourceName + ' --json';
                 
@@ -60,13 +62,15 @@ function waitingDeploymentToFinish(resourceName, appName) {
                             var deploySucceeded = result[0].status.value == 'Succeeded' ? true : false;
                             if (deploySucceeded) {
                                 step = 'waitingSite';
-                                console.info('Moving to wait site creation');
+                                console.info('Moving to the next step');
                             };
                         };
                     }
                 });
                 break;
             case 'waitingSite':
+                console.log('Waiting the web application provisioning ...');
+
                 var url = 'http://primer-'+appName + '.azurewebsites.net/';
                 var stagingUrl = 'http://primer-'+appName+'-primer-'+appName+'-staging.azurewebsites.net/';
                 var devUrl = 'http://primer-'+appName+'-primer-'+appName+'-dev.azurewebsites.net/';
