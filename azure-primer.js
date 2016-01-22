@@ -21,7 +21,7 @@ function createAzureResource(templateUrl, resourceName) {
     return exec(cmd);
 };
 
-function checkUrlProvisioningP(url) {
+function checkUrlProvisioningReady(url) {
     var deferred = Q.defer();
 
     http.get(url, function(response) {
@@ -33,10 +33,10 @@ function checkUrlProvisioningP(url) {
 
         response.on('end', function() {
             if (body.indexOf('Express Primer') > 0) {
-                deferred.resolve(true);
+                deferred.resolve();
             }
             else {
-                deferred.resolve(false));
+                deferred.reject(new Error('Express not yet provisionned')));
             }
         });
     }).on('error', function(e) {
@@ -84,14 +84,14 @@ function waitingDeploymentToFinish(resourceName, appName) {
                 console.info('Waiting sites to be provisionned');
 
                 if ((state & 1) == 0) {
-                    checkUrlProvisioningP(url).then(function() {
-                            state = state | 1;
-                            console.log('Live available: %s'.green, url);
-                        });
+                    checkUrlProvisioningReady(url).then(function() {
+                        state = state | 1;
+                        console.log('Live available: %s'.green, url);
+                    });
                 }
 
                 if ((state & 2) == 0) {
-                    checkUrlProvisioningP(stagingUrl).then(function(r) {
+                    checkUrlProvisioningReady(stagingUrl).then(function(r) {
                         if (r) {
                             state = state | 2;
                             console.log('Staging available: %s'.green, stagingUrl);
@@ -100,7 +100,7 @@ function waitingDeploymentToFinish(resourceName, appName) {
                 };
             
                 if ((state & 4) == 0) {
-                    checkUrlProvisioningP(devUrl).then(function() {
+                    checkUrlProvisioningReady(devUrl).then(function() {
                         state = state | 4;
                         console.log('Dev available: %s'.green, devUrl);
                     });
