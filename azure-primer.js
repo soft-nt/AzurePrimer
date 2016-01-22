@@ -9,6 +9,7 @@ var fse = require('fs-extra');
 var github = require('octonode');
 var colors = require('colors');
 var http = require('http');
+var Q = require('q');
 
 var location = "West US";
 var cResourceGroupName = 'LPSDelivery-APrimerTest-';
@@ -20,8 +21,8 @@ function createAzureResource(templateUrl, resourceName) {
     return exec(cmd);
 };
 
-function checkUrlProvisioning(url, onProvisioningDone) {
-    console.log(url);
+function checkUrlProvisioningP(url) {
+    var deferred = Q.defer();
 
     http.get(url, function(response) {
         var body = '';
@@ -32,16 +33,23 @@ function checkUrlProvisioning(url, onProvisioningDone) {
 
         response.on('end', function() {
             if (body.indexOf('Express Primer') > 0) {
-                onProvisioningDone();
-            };
+                deferred.resolve(true);
+            }
+            else {
+                deferred.resolve(false));
+            }
         });
     }).on('error', function(e) {
-        console.log('error ' + e);
+        deferred.reject(e);
     });
+
+    return deferred.promise;
 }
 
 function waitingDeploymentToFinish(resourceName, appName) {
     var step = 'waitingServices';
+    var state = 0;
+    var callState = 0;
 
     // Waiting the resources to be created
     var schedule = setInterval(function () {
@@ -69,36 +77,36 @@ function waitingDeploymentToFinish(resourceName, appName) {
                 });
                 break;
             case 'waitingSite':
-                console.log('Waiting the web application provisioning ...');
-
                 var url = 'http://primer-'+appName + '.azurewebsites.net/';
                 var stagingUrl = 'http://primer-'+appName+'-primer-'+appName+'-staging.azurewebsites.net/';
                 var devUrl = 'http://primer-'+appName+'-primer-'+appName+'-dev.azurewebsites.net/';
         
-                var state = 0;
-
                 console.info('Waiting sites to be provisionned');
 
                 if ((state & 1) == 0) {
-                    checkUrlProvisioning(url, function() {
-                        state = state | 1;
-                        console.log('Live available: %s'.green, url);
-                    });
-                };
+                    checkUrlProvisioningP(url).then(function() {
+                            state = state | 1;
+                            console.log('Live available: %s'.green, url);
+                        });
+                }
 
                 if ((state & 2) == 0) {
-                    checkUrlProvisioning(stagingUrl, function() {
-                        state = state | 2;
-                        console.log('Live available: %s'.green, stagingUrl);
+                    checkUrlProvisioningP(stagingUrl).then(function(r) {
+                        if (r) {
+                            state = state | 2;
+                            console.log('Staging available: %s'.green, stagingUrl);
+                        };
                     });
                 };
             
                 if ((state & 4) == 0) {
-                    checkUrlProvisioning(devUrl, function() {
+                    checkUrlProvisioningP(devUrl).then(function() {
                         state = state | 4;
-                        console.log('Live available: %s'.green, devUrl);
+                        console.log('Dev available: %s'.green, devUrl);
                     });
                 };
+
+                console.log('state: ' + state);
 
                 if (state == 7) {
                     step = 'completed';
@@ -110,7 +118,7 @@ function waitingDeploymentToFinish(resourceName, appName) {
                 clearInterval(schedule);
                 break;
         }
-    }, 5000);
+    }, 10000);
 };
 
 
