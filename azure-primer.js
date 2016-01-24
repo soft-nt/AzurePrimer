@@ -38,12 +38,15 @@ function checkUrlProvisioningReady(url) {
     http.get(url, function(response) {
         var body = '';
 
+        console.log('test: ' + url);
+
         response.on('data', function(data) {
             body += data;
         });
 
         response.on('end', function() {
-            if (body.indexOf('Express Primer') > 0) {
+                        console.log('ttt');
+            if (body.indexOf('Welcome to Express') > 0) {
                 deferred.resolve({'url': url, 'ready': true});
             }
             else {
@@ -89,39 +92,48 @@ function waitingServices(resourceName){
 }
 
 function waitingSites(appName){
-    var deferred = Q.defer();
-
     console.info('-- Waiting sites provisioning --');
 
     var url = 'http://primer-'+appName + '.azurewebsites.net/';
-    
-    return checkUrlProvisioningReady(url);
-
     var stagingUrl = 'http://primer-'+appName+'-primer-'+appName+'-staging.azurewebsites.net/';
     var devUrl = 'http://primer-'+appName+'-primer-'+appName+'-dev.azurewebsites.net/';
 
-    var processedUrls = [];
+    function getRemainingUrlsToCheck(toCheckUrls, alreadyCheckedUrls) {
+        var results = [];
 
-    /*var schedule = setInterval(function() {
-        
+        toCheckUrls.forEach(function(value) {
+            if (alreadyCheckedUrls.indexOf(value)<= 0) {
+                results.push(checkUrlProvisioningReady(value));
+            };
+        });
 
-        Q.allSettled(checkUrlProvisioningReady(url))  
+        return results;
+    }
+
+    var toCheckUrls = [url, stagingUrl, devUrl];
+    var alreadyCheckedUrls = [];
+
+    var retry = true;
+    return promiseWhile(function() {return retry;},function() {
+        if (toCheckUrls.length == alreadyCheckedUrls.length) {
+            retry = false;
+        };
+
+        return Q.allSettled(getRemainingUrlsToCheck(toCheckUrls, alreadyCheckedUrls))  
             .then(function (results) {
                 results.forEach(function (result) {
                     if (result.state === 'fulfilled') {
-                        // This item was loaded!
-                        console.log(result.value);
+                        if (result.value.ready) {
+                            console.log('Url %s ready'.green, result.value.url);
+                            alreadyCheckedUrls.push(result.value.url);
+                        };
                     } else {
                         // This item failed to be loaded :(
-                        console.log(result.reason);
+                        console.log('Failed to check the url: ' + result.reason);
                     }
                });
-            });
-
-    }, 5000);
-*/
-
-    return deferred.promise;
+            }).delay(5000);
+    });
 }
 
 function waitingDeploymentToFinish(resourceName, appName) {
@@ -129,42 +141,9 @@ function waitingDeploymentToFinish(resourceName, appName) {
         .then(function() {
             waitingSites(appName)
                 .then(function() {
-                    console.log('fff');
+                    console.log('Deployment finished');
                 });
         });
-
-    /*var step = 'waitingServices';
-
-    // Waiting the resources to be created
-    var schedule = setInterval(function () {
-        switch (step) {
-            case 'waitingServices':
-                
-                break;
-            case 'waitingSite':
-                var url = 'http://primer-'+appName + '.azurewebsites.net/';
-                var stagingUrl = 'http://primer-'+appName+'-primer-'+appName+'-staging.azurewebsites.net/';
-                var devUrl = 'http://primer-'+appName+'-primer-'+appName+'-dev.azurewebsites.net/';
-        
-                var processedUrls = [];
-
-                console.info('Waiting sites to be provisionned');
-
-                Q.allSettled([checkUrlProvisioningReady(url),checkUrlProvisioningReady(stagingUrl), checkUrlProvisioningReady(devUrl)])
-                    .then(function(results){
-                        results.forEach(function(result) {
-                            if (result.state == 'fulfilled') {
-                                console.log('...' + result.value);
-                            };
-                        });
-                    });
-                break;
-            case 'completed':
-                clearInterval(schedule);
-                break;
-        }
-    }, 10000);
-*/
 };
 
 
@@ -244,44 +223,6 @@ function promiseWhile(condition, body) {
 
 var test = function () {
     console.log('-- Checking the urls --');
-
-    function getRemainingUrlsToCheck(toCheckUrls, alreadyCheckedUrls) {
-        var results = [];
-
-        toCheckUrls.forEach(function(value) {
-            if (toCheckUrls.indexOf(value)<= 0) {
-                results.push(checkUrlProvisioningReady(value));
-            };
-        });
-
-        return results;
-    }
-
-    var toCheckUrls = ['http://primer-t12.azurewebsites.net/'];
-    var alreadyCheckedUrls = [];
-
-    var retry = true;
-    promiseWhile(function() {return retry;},function() {
-        Q.allSettled(getRemainingUrlsToCheck(toCheckUrls, alreadyCheckedUrls))  
-        .then(function (results) {
-            results.forEach(function (result) {
-                if (result.state === 'fulfilled') {
-                    if (result.value.ready) {
-                        alreadyCheckedUrls.push(result.value.url);
-                    };
-                } else {
-                    // This item failed to be loaded :(
-                    console.log('Failed to check the url: ' + result.reason);
-                }
-           });
-
-            console.log('ok');
-
-            sleep(5000).then(function() {
-                console.log('ok 2');                
-            });
-        });
-    })
 };
 
 
