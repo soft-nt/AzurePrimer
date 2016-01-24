@@ -38,14 +38,11 @@ function checkUrlProvisioningReady(url) {
     http.get(url, function(response) {
         var body = '';
 
-        console.log('test: ' + url);
-
         response.on('data', function(data) {
             body += data;
         });
 
         response.on('end', function() {
-                        console.log('ttt');
             if (body.indexOf('Welcome to Express') > 0) {
                 deferred.resolve({'url': url, 'ready': true});
             }
@@ -121,6 +118,8 @@ function waitingSites(appName){
 
         return Q.allSettled(getRemainingUrlsToCheck(toCheckUrls, alreadyCheckedUrls))  
             .then(function (results) {
+                console.log('...');
+
                 results.forEach(function (result) {
                     if (result.state === 'fulfilled') {
                         if (result.value.ready) {
@@ -265,14 +264,12 @@ function createParams(name, repoUrl) {
     
     jsonfile.writeFile(file, obj, function (err) { });
 
-    console.log('Params have been created'.green);
+    //console.log('Params have been created'.green);
 }
 
 var createApp = function (name, repoUrl) {
     var resourceGroupName = cResourceGroupName + name;
 
-    console.log('--- Creating an app called ' + name + ' ---');
-    
     switchToArm().then(function () {
         createParams(name, repoUrl);
         
