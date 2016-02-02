@@ -63,20 +63,29 @@ function waitingServices(resourceName){
     console.info('-- Waiting services provisioning --');
 
     var schedule = setInterval(function() {
-        console.log('...');
-
         var cmd = 'azure group log show ' + resourceName + ' --json';
     
-        sexec(cmd, function(error, stdout, stderr) {
+        sexec(cmd, {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
             if (error) {
-                console.error(error.red)
+                console.error(error);
             }
             else
             {
+
                 if (stdout != undefined && stdout != '') {
                     var result = JSON.parse(stdout);
-                    var deploySucceeded = result[0].status.value == 'Succeeded' ? true : false;
-                    if (deploySucceeded) {
+                    var countSitesCreated = 0;
+                    result.forEach(function(item) {
+                        if (item.operationName.value == 'Microsoft.Web/sites/slots/write') {
+                            if (item.properties.statusCode == "OK") {
+                                countSitesCreated++;
+                            };
+                        };
+                    });
+
+                    console.log('... Slots created: ' + countSitesCreated);
+
+                    if (countFinished >= 2) {
                         clearInterval(schedule);
                         deferred.resolve();
                     };
@@ -123,7 +132,6 @@ function waitingSites(appName){
                 results.forEach(function (result) {
                     if (result.state === 'fulfilled') {
                         if (result.value.ready) {
-                            console.log('Url %s ready'.green, result.value.url);
                             alreadyCheckedUrls.push(result.value.url);
                         };
                     } else {
@@ -136,12 +144,18 @@ function waitingSites(appName){
 }
 
 function waitingDeploymentToFinish(resourceName, appName) {
+    // waitingServices(resourceName)
+    //     .then(function() {
+    //         waitingSites(appName)
+    //             .then(function() {
+    //                 console.log('Deployment finished');
+    //             });
+    //     });
+    //     
+    
     waitingServices(resourceName)
         .then(function() {
-            waitingSites(appName)
-                .then(function() {
-                    console.log('Deployment finished');
-                });
+            console.log('Resources deployment finished');
         });
 };
 
@@ -220,8 +234,8 @@ function promiseWhile(condition, body) {
     return done.promise;
 }
 
-var test = function () {
-    console.log('-- Checking the urls --');
+var test = function (resourceName) {
+    waitingServices(resourceName);
 };
 
 
@@ -367,8 +381,8 @@ program
   .version('0.0.1')
   .command('test')
   .description('Test')
-  .action(function () {
-    test();
+  .action(function (resourceName) {
+    test(resourceName);
 });
 
 program.parse(process.argv);
