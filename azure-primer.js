@@ -85,7 +85,7 @@ function waitingServices(resourceName){
 
                     console.log('... Slots created: ' + countSitesCreated);
 
-                    if (countFinished >= 2) {
+                    if (countSitesCreated >= 2) {
                         clearInterval(schedule);
                         deferred.resolve();
                     };
